@@ -1,0 +1,13 @@
+<!-- that thing in the background that blocks access to the rest of the
+page and ensures that the focus is on the alert box and that box is the 
+second div I'll add here -->
+<div class="backdrop" (click)="onClose()"></div>
+
+<div class="alert-box">
+    <p>
+        {{ message }}
+    </p>
+    <div class="alert-box-actions">
+        <button class="btn btn-primary" (click)="onClose()">Close</button>
+    </div>
+</div>
