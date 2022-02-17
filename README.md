@@ -105,10 +105,15 @@ In Angular 8+, the @ViewChild() syntax which you'll see in the next lecture need
 
 Instead of:
 
+```
 @ViewChild('serverContentInput') serverContentInput: ElementRef;
+```
 use
 
+```
 @ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;
+```
+
 The same change (add { static: true } as a second argument) needs to be applied to ALL usages of @ViewChild() (and also @ContentChild() which you'll learn about later) IF you plan on accessing the selected element inside of ngOnInit().
 
 If you DON'T access the selected element in ngOnInit (but anywhere else in your component), set static: false instead!
@@ -128,6 +133,7 @@ Of course, you can do more than simply change the styling of an element via setS
 # Closing the Dropdown From Anywhere
 If you want that a dropdown can also be closed by a click anywhere outside (which also means that a click on one dropdown closes any other one, btw.), replace the code of dropdown.directive.ts by this one (placing the listener not on the dropdown, but on the document):
 
+```
 import {Directive, ElementRef, HostBinding, HostListener} from '@angular/core';
  
 @Directive({
@@ -140,6 +146,7 @@ export class DropdownDirective {
   }
   constructor(private elRef: ElementRef) {}
 }
+```
 
 # Alternative Non-Collapsable Navigation Bar
 The way we added it, the Navbar will collapse on smaller screens. Since we didn't implement a Hamburger menu, that means that there's no way of accessing our links on smaller screens.
@@ -150,13 +157,15 @@ Adding a Hamburger Menu:
 
 Alternatively, if you want to make the navigation bar responsive, please replace these lines in header.component.html:
 
-<!--
+```
 <div class="navbar-header">
   <a routerLink="/" class="navbar-brand">Recipe Book</a>
 </div>
 <div class="collapse navbar-collapse">
+```
 with these lines:
 
+```
 <div class="navbar-header">
   <button type="button" class="navbar-toggle" (click)="collapsed = !collapsed">
 	<span class="icon-bar" *ngFor="let iconBar of [1, 2, 3]"></span>
@@ -164,23 +173,30 @@ with these lines:
   <a routerLink="/" class="navbar-brand">Recipe Book</a>
 </div>
 <div class="navbar-collapse" [class.collapse]="collapsed" (window:resize)="collapsed = true">
--->
+```
 and add this line to header.component.ts:
 
+```
 collapsed = true;
+```
 
 # Services in Angular 6+
 If you're using Angular 6+ (check your package.json  to find out), you can provide application-wide services in a different way.
 
 Instead of adding a service class to the providers[]  array in AppModule , you can set the following config in @Injectable() :
 
+```
 @Injectable({providedIn: 'root'})
 export class MyService { ... }
+```
+
 This is exactly the same as:
 
+```
 export class MyService { ... }
+```
 and
-
+```
 import { MyService } from './path/to/my.service';
  
 @NgModule({
@@ -188,6 +204,7 @@ import { MyService } from './path/to/my.service';
     providers: [MyService]
 })
 export class AppModule { ... }
+```
 Using this new syntax is completely optional, the traditional syntax (using providers[] ) will still work. The "new syntax" does offer one advantage though: Services can be loaded lazily by Angular (behind the scenes) and redundant code can be removed automatically. This can lead to a better performance and loading speed - though this really only kicks in for bigger services and apps in general.
 
 # Important: Redirection Path Matching
@@ -195,7 +212,9 @@ In our example, we didn't encounter any issues when we tried to redirect the use
 
 By default, Angular matches paths by prefix. That means, that the following route will match both /recipes  and just / 
 
+```
 { path: '', redirectTo: '/somewhere-else' } 
+```
 
 Actually, Angular will give you an error here, because that's a common gotcha: This route will now ALWAYS redirect you! Why?
 
@@ -203,7 +222,9 @@ Since the default matching strategy is "prefix" , Angular checks if the path you
 
 To fix this behavior, you need to change the matching strategy to "full" :
 
+```
 { path: '', redirectTo: '/somewhere-else', pathMatch: 'full' } 
+```
 
 Now, you only get redirected, if the full path is ''  (so only if you got NO other content in your path in this example).
 
@@ -236,59 +257,72 @@ Additionally, you might also want to enable HTML5 validation (by default, Angula
 # Fixing a Bug
 In the next lecture, we'll add some code to access the controls of our form array:
 
+```
 *ngFor="let hobbyControl of signupForm.get('hobbies').controls; let i = index"
+```
 
 This code will fail as of the latest Angular version.
 
 You can fix it easily though. Outsource the "get the controls" logic into a method of your component code (the .ts file):
-<!--
+```
 getControls() {
   return (<FormArray>this.signupForm.get('hobbies')).controls;
 }
--->
+```
 
 # In the template, you can then use:
 
+```
 *ngFor="let hobbyControl of getControls(); let i = index"
+```
 
 Alternatively, you can set up a getter and use an alternative type casting syntax:
 
+```
 get controls() {
   return (this.signupForm.get('hobbies') as FormArray).controls;
 }
+```
+
 and then in the template:
 
+```
 *ngFor="let hobbyControl of controls; let i = index"
+```
 
 This adjustment is required due to the way TS works and Angular parses your templates (it doesn't understand TS there).
   
 # Fixing a Bug
 In the next lecture, we'll add some code to access the controls of our form array:
 
+```
 *ngFor="let ingredientCtrl of recipeForm.get('ingredients').controls; let i = index"
+```
 
 This code will fail with the latest Angular version.
 
 You can fix it easily though. Outsource the "get the controls" logic into a getter of your component code (the .ts file):
 
-<!-- 
+```
 get controls() { // a getter!
   return (<FormArray>this.recipeForm.get('ingredients')).controls;
 }
--->
+```
 In the template, you can then use:
 
+```
 *ngFor="let ingredientCtrl of controls; let i = index"
+```
 
 This adjustment is required due to the way TS works and Angular parses your templates (it doesn't understand TS there).
   
 # Deleting all Items in a FormArray
 As of Angular 8+, there's a new way of clearing all items in a FormArray.
 
-<!-- 
+```
 (<FormArray>this.recipeForm.get('ingredients')).clear();
 The clear() method automatically loops through all registered FormControls (or FormGroups) in the FormArray and removes them.
--->
+```
 
 It's like manually creating a loop and calling removeAt() for every item.
   
